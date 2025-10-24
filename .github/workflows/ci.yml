@@ -12,22 +12,23 @@ jobs:
         with:
           persist-credentials: false
           
-      - name: Setup Node.js # 新增：设置 Node.js 版本
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # 使用 Node.js 18 解决兼容性问题
+          node-version: '18'
           cache: 'npm'
           
-      - name: Install and Build # 下载依赖 打包项目
+      - name: Install and Build
         run: |
           npm install
-          npm run build
+          # 关键修改：添加环境变量解决 OpenSSL 兼容性问题
+          NODE_OPTIONS="--openssl-legacy-provider" npm run build
 
-      - name: Deploy # 将打包内容发布到 github page
-        uses: JamesIves/github-pages-deploy-action@3.7.1 # 使用别人写好的 actions
-        with:  # 自定义环境变量
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
           ACCESS_TOKEN: ${{ secrets.gitpage }}
           BRANCH: master
           FOLDER: dist
-          REPOSITORY_NAME: momo040611.github.io # 这是我的 github page 地址
-          TARGET_FOLDER: github-actions-demo # 打包的文件将放到静态服务器 github-actions-demo 目录下
+          REPOSITORY_NAME: momo040611.github.io
+          TARGET_FOLDER: github-actions-demo
